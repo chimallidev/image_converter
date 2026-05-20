@@ -1,0 +1,4 @@
+.venv_image_converter
+image_converter_workspace.code-workspace
+__pycache__/
+*.pyc
