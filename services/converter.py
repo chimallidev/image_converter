@@ -138,5 +138,6 @@ class ImageConverter:
                 output_path,
                 format="WEBP",
                 quality=self.preset["quality"],
+                lossless= self.config.lossless_enabled,
                 method=self.preset["method"],
             )

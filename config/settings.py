@@ -14,7 +14,7 @@ QUALITY_PRESETS = {
         "speed": 4,
     },
     "web": {
-        "quality": 70,
+        "quality": 55,
         "method": 4,
         "speed": 6,
     },
@@ -35,6 +35,7 @@ class AppConfig:
     resize_mode: str | None
     max_size: int | None
     quality_preset: str
+    lossless_enabled: bool
     max_workers: int
 
     @staticmethod
@@ -91,6 +92,12 @@ class AppConfig:
                 "Elige maxima/balanceada/web/ultra: "
             ).strip().lower()
 
+        lossless_answer = input(
+            "¿Modo lossless? (s/n): "
+        ).strip().lower()
+
+        lossless_enabled = lossless_answer == "s"
+
         max_workers = int(
             input("Número de hilos paralelos: ").strip()
         )
@@ -103,5 +110,6 @@ class AppConfig:
             resize_mode=resize_mode,
             max_size=max_size,
             quality_preset=quality_preset,
+            lossless_enabled = lossless_enabled,
             max_workers=max_workers,
         )

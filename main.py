@@ -9,5 +9,4 @@ def main():
     converter.process_images()
 
 
-if __name__ == "__main__":
-    main()
+main()
