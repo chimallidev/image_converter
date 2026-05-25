@@ -22,6 +22,12 @@ class ImageConverter:
             config.quality_preset
         ]
 
+        self.errores = False
+
+        self.lista_errores = []
+
+        self.contador_errores = 0
+
     def process_images(self):
         FileUtils.ensure_directory_exists(
             self.config.output_dir
@@ -62,6 +68,26 @@ class ImageConverter:
         progress_bar.close()
 
         print("\nProceso finalizado.")
+
+        if self.errores:
+            if self.contador_errores > 1:
+                error_mensaje = f'Ocurrieron {self.contador_errores} errores.'
+            else:
+                error_mensaje = f'Ocurrió {self.contador_errores} error.'
+            
+            print("\n")
+            print(error_mensaje)
+
+            indice_errores = 1
+
+            for item_error in self.lista_errores:
+                print(indice_errores)
+                print(item_error.get("tipo"))
+                print(item_error.get("mensaje"))
+                print(item_error.get("t_imagen"))
+                print("\n")
+
+                indice_errores += 1
 
     def _process_single_image(
         self,
@@ -109,6 +135,7 @@ class ImageConverter:
             self._save_image(
                 image=image,
                 output_path=output_path,
+                image_path= image_path
             )
 
             print(
@@ -120,24 +147,43 @@ class ImageConverter:
         self,
         image,
         output_path: Path,
+        image_path: Path
     ):
         output_format = self.config.output_format.upper()
 
-        if output_format == "AVIF":
+        try:
+            if output_format == "AVIF":
 
-            image.save(
-                output_path,
-                format="AVIF",
-                quality=self.preset["quality"],
-                speed=self.preset["speed"],
-            )
+                image.save(
+                    output_path,
+                    format="AVIF",
+                    quality=self.preset["quality"],
+                    speed=self.preset["speed"],
+                )
 
-        else:
+            else:
 
-            image.save(
-                output_path,
-                format="WEBP",
-                quality=self.preset["quality"],
-                lossless= self.config.lossless_enabled,
-                method=self.preset["method"],
-            )
+                image.save(
+                    output_path,
+                    format="WEBP",
+                    quality=self.preset["quality"],
+                    lossless= self.config.lossless_enabled,
+                    method=self.preset["method"],
+                )
+        except Exception as e:
+            if self.errores == False:
+                self.errores = True
+
+            new_error = {}
+            print(f"Tipo de error: {type(e).__name__}")
+            print(f"Mensaje del error: {e}")
+            print(f"Error ocurido en la imagen: {image_path.name}")
+
+            new_error = {
+                "tipo": type(e).__name__, 
+                "mensaje": e,
+                "t_imagen": image_path.name 
+                }
+            
+            self.contador_errores += 1
+            self.lista_errores.append(new_error)
